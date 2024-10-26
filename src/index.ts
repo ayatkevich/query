@@ -67,7 +67,7 @@ export class $ {
     ]);
   }
 
-  data(data: Record<string, string>) {
+  setData(data: Record<string, string>) {
     return new $(this.query, [
       ...this.mutations,
       (element) => {

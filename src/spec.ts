@@ -10,6 +10,29 @@ describe('query', () => {
     expect(div.textContent).toBe('Hello');
   });
 
+  it('should allow chaining', () => {
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
+
+    const [div] = new $('div').addClass('foo').addClass('bar');
+    expect(div.classList.contains('foo')).toBe(true);
+    expect(div.classList.contains('bar')).toBe(true);
+  });
+
+  it('should provide a method to apply all mutations to every element', () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    new $('div').addClass('foo').unwrap();
+
+    expect(
+      Array.from(document.querySelectorAll('div')).map((element) =>
+        Array.from(element.classList.values())
+      )
+    ).toEqual([['foo'], ['foo']]);
+  });
+
   it('should allow manipulating classes', () => {
     globalThis.document = parseHTML(/* HTML */ `
       <div>Hello</div>
@@ -73,7 +96,7 @@ describe('query', () => {
     ).document;
 
     {
-      const [div] = new $('div').data({ foo: 'baz' });
+      const [div] = new $('div').setData({ foo: 'baz' });
       expect(div.dataset.foo).toBe('baz');
     }
 
@@ -81,28 +104,5 @@ describe('query', () => {
       const [div] = new $('div').removeData('foo');
       expect(div.dataset.foo).toBe(undefined);
     }
-  });
-
-  it('should allow chaining', () => {
-    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
-
-    const [div] = new $('div').addClass('foo').addClass('bar');
-    expect(div.classList.contains('foo')).toBe(true);
-    expect(div.classList.contains('bar')).toBe(true);
-  });
-
-  it('should provide a method to apply all mutations to every element', () => {
-    globalThis.document = parseHTML(/* HTML */ `
-      <div>Hello</div>
-      <div>World</div>
-    `).document;
-
-    new $('div').addClass('foo').unwrap();
-
-    expect(
-      Array.from(document.querySelectorAll('div')).map((element) =>
-        Array.from(element.classList.values())
-      )
-    ).toEqual([['foo'], ['foo']]);
   });
 });
