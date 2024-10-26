@@ -66,4 +66,20 @@ describe('query', () => {
       expect(div.getAttribute('foo')).toBe('');
     }
   });
+
+  it('should allow manipulating data attributes', () => {
+    globalThis.document = parseHTML(
+      /* HTML */ `<div data-foo="bar"></div>`
+    ).document;
+
+    {
+      const [div] = new $('div').data({ foo: 'baz' });
+      expect(div.dataset.foo).toBe('baz');
+    }
+
+    {
+      const [div] = new $('div').removeData('foo');
+      expect(div.dataset.foo).toBe(undefined);
+    }
+  });
 });

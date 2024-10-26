@@ -1,7 +1,7 @@
 export class $ {
   constructor(
     public query: string,
-    private mutations: readonly ((element: Element) => void)[] = []
+    private mutations: readonly ((element: HTMLElement) => void)[] = []
   ) {}
 
   addClass(className: string) {
@@ -67,12 +67,32 @@ export class $ {
     ]);
   }
 
+  data(data: Record<string, string>) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        Object.entries(data).forEach(([key, value]) => {
+          element.dataset[key] = value;
+        });
+      },
+    ]);
+  }
+
+  removeData(key: string) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        delete element.dataset[key];
+      },
+    ]);
+  }
+
   *[Symbol.iterator]() {
     for (const element of document.querySelectorAll(this.query)) {
       for (const mutation of this.mutations) {
-        mutation(element);
+        mutation(element as HTMLElement);
       }
-      yield element;
+      yield element as HTMLElement;
     }
   }
 }
