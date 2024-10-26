@@ -90,4 +90,19 @@ describe('query', () => {
     expect(div.classList.contains('foo')).toBe(true);
     expect(div.classList.contains('bar')).toBe(true);
   });
+
+  it('should provide a method to apply all mutations to every element', () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    new $('div').addClass('foo').unwrap();
+
+    expect(
+      Array.from(document.querySelectorAll('div')).map((element) =>
+        Array.from(element.classList.values())
+      )
+    ).toEqual([['foo'], ['foo']]);
+  });
 });

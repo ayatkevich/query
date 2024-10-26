@@ -87,6 +87,10 @@ export class $ {
     ]);
   }
 
+  unwrap() {
+    return Array.from(this);
+  }
+
   *[Symbol.iterator]() {
     for (const element of document.querySelectorAll(this.query)) {
       for (const mutation of this.mutations) {
