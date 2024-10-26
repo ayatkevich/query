@@ -1,4 +1,6 @@
 {
+  "name": "@ayatkevich/query",
+  "version": "0.0.1",
   "type": "module",
   "devDependencies": {
     "@jest/globals": "29.7.0",
