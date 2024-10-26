@@ -82,4 +82,12 @@ describe('query', () => {
       expect(div.dataset.foo).toBe(undefined);
     }
   });
+
+  it('should allow chaining', () => {
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
+
+    const [div] = new $('div').addClass('foo').addClass('bar');
+    expect(div.classList.contains('foo')).toBe(true);
+    expect(div.classList.contains('bar')).toBe(true);
+  });
 });
