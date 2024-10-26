@@ -1,3 +1,9 @@
+export function html(strings: TemplateStringsArray, ...values: any[]) {
+  const container = document.createElement('div');
+  container.innerHTML = String.raw({ raw: strings }, ...values);
+  return container.children[0] as HTMLElement;
+}
+
 export class $ {
   constructor(
     public readonly query: string,
@@ -83,6 +89,15 @@ export class $ {
       ...this.mutations,
       (element) => {
         delete element.dataset[key];
+      },
+    ]);
+  }
+
+  append(node: Node) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.appendChild(node);
       },
     ]);
   }

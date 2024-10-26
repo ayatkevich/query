@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { parseHTML } from 'linkedom';
-import { $ } from '.';
+import { $, html } from '.';
 
 describe('query', () => {
   it('should implement the iterator protocol', () => {
@@ -98,6 +98,15 @@ describe('query', () => {
     {
       const [div] = new $('div').removeData('foo');
       expect(div.dataset.foo).toBe(undefined);
+    }
+  });
+
+  it('should allow manipulating the DOM tree', () => {
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
+
+    {
+      const [div] = new $('div').append(html`<span>Hello</span>`);
+      expect(div.outerHTML).toBe('<div><span>Hello</span></div>');
     }
   });
 });
