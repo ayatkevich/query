@@ -1,7 +1,7 @@
 export class $ {
   constructor(
-    public query: string,
-    private mutations: readonly ((element: HTMLElement) => void)[] = []
+    public readonly query: string,
+    private readonly mutations: readonly ((element: HTMLElement) => void)[] = []
   ) {}
 
   addClass(className: string) {
@@ -92,11 +92,11 @@ export class $ {
   }
 
   *[Symbol.iterator]() {
-    for (const element of document.querySelectorAll(this.query)) {
+    for (const element of document.querySelectorAll<HTMLElement>(this.query)) {
       for (const mutation of this.mutations) {
-        mutation(element as HTMLElement);
+        mutation(element);
       }
-      yield element as HTMLElement;
+      yield element;
     }
   }
 }
