@@ -111,6 +111,15 @@ export class $ {
     ]);
   }
 
+  remove() {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.remove();
+      },
+    ]);
+  }
+
   unwrap() {
     return Array.from(this);
   }

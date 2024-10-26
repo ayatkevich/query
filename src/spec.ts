@@ -115,5 +115,11 @@ describe('query', () => {
         '<div><span>World</span><span>Hello</span></div>'
       );
     }
+
+    {
+      new $('span').remove().unwrap();
+      const [div] = new $('div');
+      expect(div.outerHTML).toBe('<div></div>');
+    }
   });
 });
