@@ -44,4 +44,26 @@ describe('query', () => {
       expect(div.classList.contains('bar')).toBe(true);
     }
   });
+
+  it('should allow manipulating attributes', () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    {
+      const [div] = new $('div').setAttribute('foo', 'bar');
+      expect(div.getAttribute('foo')).toBe('bar');
+    }
+
+    {
+      const [div] = new $('div').removeAttribute('foo');
+      expect(div.getAttribute('foo')).toBe(null);
+    }
+
+    {
+      const [div] = new $('div').toggleAttribute('foo');
+      expect(div.getAttribute('foo')).toBe('');
+    }
+  });
 });
