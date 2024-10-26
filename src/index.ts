@@ -1,33 +1,43 @@
 export class $ {
-  private mutations: ((element: Element) => void)[] = [];
-  constructor(public query: string) {}
+  constructor(
+    public query: string,
+    private mutations: readonly ((element: Element) => void)[] = []
+  ) {}
 
   addClass(className: string) {
-    this.mutations.push((element) => {
-      element.classList.add(className);
-    });
-    return this;
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.classList.add(className);
+      },
+    ]);
   }
 
   removeClass(className: string) {
-    this.mutations.push((element) => {
-      element.classList.remove(className);
-    });
-    return this;
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.classList.remove(className);
+      },
+    ]);
   }
 
   toggleClass(className: string) {
-    this.mutations.push((element) => {
-      element.classList.toggle(className);
-    });
-    return this;
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.classList.toggle(className);
+      },
+    ]);
   }
 
   replaceClass(oldClassName: string, newClassName: string) {
-    this.mutations.push((element) => {
-      element.classList.replace(oldClassName, newClassName);
-    });
-    return this;
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.classList.replace(oldClassName, newClassName);
+      },
+    ]);
   }
 
   *[Symbol.iterator]() {
