@@ -102,6 +102,15 @@ export class $ {
     ]);
   }
 
+  prepend(node: Node) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.prepend(node);
+      },
+    ]);
+  }
+
   unwrap() {
     return Array.from(this);
   }

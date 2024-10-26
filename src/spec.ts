@@ -108,5 +108,12 @@ describe('query', () => {
       const [div] = new $('div').append(html`<span>Hello</span>`);
       expect(div.outerHTML).toBe('<div><span>Hello</span></div>');
     }
+
+    {
+      const [div] = new $('div').prepend(html`<span>World</span>`);
+      expect(div.outerHTML).toBe(
+        '<div><span>World</span><span>Hello</span></div>'
+      );
+    }
   });
 });
