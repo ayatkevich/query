@@ -10,14 +10,16 @@ describe('query', () => {
     expect(div.textContent).toBe('Hello');
   });
 
-  it('should add class', () => {
+  it('should allow manipulating classes', () => {
     globalThis.document = parseHTML(/* HTML */ `
       <div>Hello</div>
       <div>World</div>
     `).document;
 
-    const [div] = new $('div').addClass('foo');
-    expect(div.classList.contains('foo')).toBe(true);
+    {
+      const [div] = new $('div').addClass('foo');
+      expect(div.classList.contains('foo')).toBe(true);
+    }
 
     // since the iterator is lazy, the second div should not have the class
     expect(
@@ -25,5 +27,21 @@ describe('query', () => {
         Array.from(element.classList.values())
       )
     ).toEqual([['foo'], []]);
+
+    {
+      const [div] = new $('div').removeClass('foo');
+      expect(div.classList.contains('foo')).toBe(false);
+    }
+
+    {
+      const [div] = new $('div').toggleClass('foo');
+      expect(div.classList.contains('foo')).toBe(true);
+    }
+
+    {
+      const [div] = new $('div').replaceClass('foo', 'bar');
+      expect(div.classList.contains('foo')).toBe(false);
+      expect(div.classList.contains('bar')).toBe(true);
+    }
   });
 });
