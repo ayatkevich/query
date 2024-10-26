@@ -11,11 +11,21 @@ describe('query', () => {
   });
 
   it('should allow chaining', () => {
-    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
 
     const [div] = new $('div').addClass('foo').addClass('bar');
     expect(div.classList.contains('foo')).toBe(true);
     expect(div.classList.contains('bar')).toBe(true);
+
+    // since the iterator is lazy, the second div should not have the class
+    expect(
+      Array.from(new $('div')).map((element) =>
+        Array.from(element.classList.values())
+      )
+    ).toEqual([['foo', 'bar'], []]);
   });
 
   it('should provide a method to apply all mutations to every element', () => {
@@ -34,22 +44,12 @@ describe('query', () => {
   });
 
   it('should allow manipulating classes', () => {
-    globalThis.document = parseHTML(/* HTML */ `
-      <div>Hello</div>
-      <div>World</div>
-    `).document;
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
 
     {
       const [div] = new $('div').addClass('foo');
       expect(div.classList.contains('foo')).toBe(true);
     }
-
-    // since the iterator is lazy, the second div should not have the class
-    expect(
-      Array.from(new $('div')).map((element) =>
-        Array.from(element.classList.values())
-      )
-    ).toEqual([['foo'], []]);
 
     {
       const [div] = new $('div').removeClass('foo');
@@ -69,10 +69,7 @@ describe('query', () => {
   });
 
   it('should allow manipulating attributes', () => {
-    globalThis.document = parseHTML(/* HTML */ `
-      <div>Hello</div>
-      <div>World</div>
-    `).document;
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
 
     {
       const [div] = new $('div').setAttribute('foo', 'bar');
@@ -91,9 +88,7 @@ describe('query', () => {
   });
 
   it('should allow manipulating data attributes', () => {
-    globalThis.document = parseHTML(
-      /* HTML */ `<div data-foo="bar"></div>`
-    ).document;
+    globalThis.document = parseHTML(/* HTML */ `<div></div>`).document;
 
     {
       const [div] = new $('div').setData({ foo: 'baz' });
