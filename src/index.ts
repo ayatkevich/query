@@ -138,6 +138,15 @@ export class $ {
     ]);
   }
 
+  on(event: string, handler: (event: Event) => void) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.addEventListener(event, handler);
+      },
+    ]);
+  }
+
   unwrap() {
     return Array.from(this);
   }

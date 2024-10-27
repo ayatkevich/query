@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 import { parseHTML } from 'linkedom';
 import { $, html } from '.';
 
@@ -138,5 +138,27 @@ describe('query', () => {
         '<div><span>Hello</span><span>World</span><span>!</span></div>'
       );
     }
+  });
+
+  it('should allow adding event listeners', () => {
+    globalThis.document = parseHTML(
+      /* HTML */ `<button>Click me</button>`
+    ).document;
+
+    const clickHandler = jest.fn();
+    const [button] = new $('button').on('click', clickHandler);
+
+    expect(clickHandler).not.toHaveBeenCalled();
+
+    button.click();
+
+    expect(clickHandler).toHaveBeenCalledTimes(1);
+    expect(clickHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'click' })
+    );
+
+    button.click();
+
+    expect(clickHandler).toHaveBeenCalledTimes(2);
   });
 });
