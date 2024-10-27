@@ -121,5 +121,22 @@ describe('query', () => {
       const [div] = new $('div');
       expect(div.outerHTML).toBe('<div></div>');
     }
+
+    {
+      [...new $('div').append(html`<span>World</span>`)];
+      [...new $('span').before(html`<span>Hello</span>`)];
+      const [div] = new $('div');
+      expect(div.outerHTML).toBe(
+        '<div><span>Hello</span><span>World</span></div>'
+      );
+    }
+
+    {
+      [...new $('span').after(html`<span>!</span>`)];
+      const [div] = new $('div');
+      expect(div.outerHTML).toBe(
+        '<div><span>Hello</span><span>World</span><span>!</span></div>'
+      );
+    }
   });
 });

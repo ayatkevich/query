@@ -120,6 +120,24 @@ export class $ {
     ]);
   }
 
+  before(node: Element) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.insertAdjacentElement('beforebegin', node);
+      },
+    ]);
+  }
+
+  after(node: Element) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.insertAdjacentElement('afterend', node);
+      },
+    ]);
+  }
+
   unwrap() {
     return Array.from(this);
   }
