@@ -7,11 +7,12 @@ export function html(strings: TemplateStringsArray, ...values: any[]) {
 export class $ {
   constructor(
     public readonly query: string,
+    private readonly root: Document | Element = document,
     private readonly mutations: readonly ((element: HTMLElement) => void)[] = []
   ) {}
 
   addClass(className: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.classList.add(className);
@@ -20,7 +21,7 @@ export class $ {
   }
 
   removeClass(className: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.classList.remove(className);
@@ -29,7 +30,7 @@ export class $ {
   }
 
   toggleClass(className: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.classList.toggle(className);
@@ -38,7 +39,7 @@ export class $ {
   }
 
   replaceClass(oldClassName: string, newClassName: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.classList.replace(oldClassName, newClassName);
@@ -47,7 +48,7 @@ export class $ {
   }
 
   setAttribute(name: string, value: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.setAttribute(name, value);
@@ -56,7 +57,7 @@ export class $ {
   }
 
   removeAttribute(name: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.removeAttribute(name);
@@ -65,7 +66,7 @@ export class $ {
   }
 
   toggleAttribute(name: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.toggleAttribute(name);
@@ -74,7 +75,7 @@ export class $ {
   }
 
   setData(data: Record<string, string>) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         Object.entries(data).forEach(([key, value]) => {
@@ -85,7 +86,7 @@ export class $ {
   }
 
   removeData(key: string) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         delete element.dataset[key];
@@ -94,7 +95,7 @@ export class $ {
   }
 
   append(node: Node) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.appendChild(node);
@@ -103,7 +104,7 @@ export class $ {
   }
 
   prepend(node: Node) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.prepend(node);
@@ -112,7 +113,7 @@ export class $ {
   }
 
   remove() {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.remove();
@@ -121,7 +122,7 @@ export class $ {
   }
 
   before(node: Element) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.insertAdjacentElement('beforebegin', node);
@@ -130,7 +131,7 @@ export class $ {
   }
 
   after(node: Element) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.insertAdjacentElement('afterend', node);
@@ -139,7 +140,7 @@ export class $ {
   }
 
   on(event: string, handler: (event: Event) => void) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.addEventListener(event, handler);
@@ -148,7 +149,7 @@ export class $ {
   }
 
   once(event: string, handler: (event: Event) => void) {
-    return new $(this.query, [
+    return new $(this.query, this.root, [
       ...this.mutations,
       (element) => {
         element.addEventListener(event, handler, { once: true });
@@ -165,7 +166,7 @@ export class $ {
   }
 
   *[Symbol.iterator]() {
-    for (const element of document.querySelectorAll<HTMLElement>(this.query)) {
+    for (const element of this.root.querySelectorAll<HTMLElement>(this.query)) {
       for (const mutation of this.mutations) {
         mutation(element);
       }

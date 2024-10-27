@@ -9,6 +9,7 @@ manipulating DOM elements, with the added benefit of **lazy evaluation**.
 - [Installation](#installation)
 - [Usage](#usage)
   - [Selecting Elements](#selecting-elements)
+    - [Specifying a Root Element](#specifying-a-root-element)
   - [Chaining Methods](#chaining-methods)
   - [Lazy Evaluation](#lazy-evaluation)
     - [Example of Laziness](#example-of-laziness)
@@ -40,6 +41,38 @@ import { $ } from '@ayatkevich/query';
 new $('div');
 ```
 
+#### Specifying a Root Element
+
+You can optionally specify a root element for your query. By default, the root
+is `document`, but you can pass any `Element` as the second argument to scope
+your selector:
+
+```typescript
+const rootElement = document.getElementById('root');
+new $('span', rootElement);
+```
+
+This will select all `<span>` elements within `rootElement`, ignoring any
+`<span>` elements outside of it.
+
+**Example:**
+
+```typescript
+import { $ } from '@ayatkevich/query';
+
+// HTML structure:
+// <div id="root">
+//   <span class="inside">Inside Root</span>
+// </div>
+// <span class="outside">Outside Root</span>
+
+const rootElement = document.getElementById('root');
+const elements = new $('span', rootElement).unwrap();
+
+console.log(elements.length); // Output: 1
+console.log(elements[0].textContent); // Output: "Inside Root"
+```
+
 ### Chaining Methods
 
 The library supports method chaining for a fluent API:
@@ -57,7 +90,7 @@ by reducing unnecessary DOM manipulations.
 
 #### Example of Laziness
 
-Consider the following test cases from [`src/spec.ts`](./src/spec.ts):
+Consider the following test cases:
 
 ```typescript
 import { describe, expect, it } from '@jest/globals';
@@ -284,59 +317,35 @@ The library includes a comprehensive test suite using Jest. To run the tests:
 npm test
 ```
 
-**Example Test Case:**
+**Example Test Case Using Root Element:**
 
 ```typescript
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { parseHTML } from 'linkedom';
-import { $, html } from '@ayatkevich/query';
+import { $ } from '@ayatkevich/query';
 
 describe('query', () => {
-  it('should allow adding event listeners', () => {
-    globalThis.document = parseHTML(
-      /* HTML */ `<button>Click me</button>`
-    ).document;
-
-    const clickHandler = jest.fn();
-    const [button] = new $('button').on('click', clickHandler);
-
-    expect(clickHandler).not.toHaveBeenCalled();
-
-    button.click();
-
-    expect(clickHandler).toHaveBeenCalledTimes(1);
-    expect(clickHandler).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'click' })
-    );
-
-    button.click();
-
-    expect(clickHandler).toHaveBeenCalledTimes(2);
-  });
-
-  it('should allow async unwrapping with await syntax', async () => {
+  it('should allow querying within a specific root element', () => {
     globalThis.document = parseHTML(/* HTML */ `
-      <div>Hello</div>
-      <div>World</div>
+      <div id="root">
+        <span class="inside">Inside Root</span>
+      </div>
+      <span class="outside">Outside Root</span>
     `).document;
 
-    const query = new $('div').addClass('async-test');
+    const rootElement = document.getElementById('root')!;
+    const query = new $('span', rootElement);
 
-    // At this point, mutations have not been applied due to laziness
-    const divs = Array.from(document.querySelectorAll('div'));
-    expect(divs[0].classList.contains('async-test')).toBe(false);
-    expect(divs[1].classList.contains('async-test')).toBe(false);
+    const elements = query.unwrap();
 
-    // Use await to unwrap the query
-    await query;
-
-    // After awaiting, mutations should be applied to all elements
-    const updatedDivs = Array.from(document.querySelectorAll('div'));
-    expect(updatedDivs[0].classList.contains('async-test')).toBe(true);
-    expect(updatedDivs[1].classList.contains('async-test')).toBe(true);
+    expect(elements.length).toBe(1);
+    expect(elements[0].textContent).toBe('Inside Root');
   });
 });
 ```
+
+This test case demonstrates how to use the `root` argument to scope your queries
+to a specific element.
 
 ## License
 

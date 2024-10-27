@@ -205,4 +205,21 @@ describe('query', () => {
     expect(updatedDivs[0].classList.contains('async-test')).toBe(true);
     expect(updatedDivs[1].classList.contains('async-test')).toBe(true);
   });
+
+  it('should allow querying within a specific root element', () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div id="root">
+        <span class="inner">Inside Root</span>
+      </div>
+      <span class="outer">Outside Root</span>
+    `).document;
+
+    const rootElement = document.getElementById('root')!;
+    const query = new $('span', rootElement);
+
+    const elements = query.unwrap();
+
+    expect(elements.length).toBe(1);
+    expect(elements[0].textContent).toBe('Inside Root');
+  });
 });
