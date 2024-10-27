@@ -161,4 +161,26 @@ describe('query', () => {
 
     expect(clickHandler).toHaveBeenCalledTimes(2);
   });
+
+  it('should allow adding one-time event listeners with once', () => {
+    globalThis.document = parseHTML(
+      /* HTML */ `<button>Click me once</button>`
+    ).document;
+
+    const clickHandler = jest.fn();
+    const [button] = new $('button').once('click', clickHandler);
+
+    expect(clickHandler).not.toHaveBeenCalled();
+
+    button.click();
+
+    expect(clickHandler).toHaveBeenCalledTimes(1);
+    expect(clickHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'click' })
+    );
+
+    button.click();
+
+    expect(clickHandler).toHaveBeenCalledTimes(1);
+  });
 });

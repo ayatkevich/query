@@ -147,6 +147,15 @@ export class $ {
     ]);
   }
 
+  once(event: string, handler: (event: Event) => void) {
+    return new $(this.query, [
+      ...this.mutations,
+      (element) => {
+        element.addEventListener(event, handler, { once: true });
+      },
+    ]);
+  }
+
   unwrap() {
     return Array.from(this);
   }
