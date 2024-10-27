@@ -183,4 +183,26 @@ describe('query', () => {
 
     expect(clickHandler).toHaveBeenCalledTimes(1);
   });
+
+  it('should allow async unwrapping with await syntax', async () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    const query = new $('div').addClass('async-test');
+
+    // At this point, mutations have not been applied due to laziness
+    const divs = Array.from(document.querySelectorAll('div'));
+    expect(divs[0].classList.contains('async-test')).toBe(false);
+    expect(divs[1].classList.contains('async-test')).toBe(false);
+
+    // Use await to unwrap the query
+    await query;
+
+    // After awaiting, mutations should be applied to all elements
+    const updatedDivs = Array.from(document.querySelectorAll('div'));
+    expect(updatedDivs[0].classList.contains('async-test')).toBe(true);
+    expect(updatedDivs[1].classList.contains('async-test')).toBe(true);
+  });
 });

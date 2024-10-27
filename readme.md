@@ -11,6 +11,9 @@ manipulating DOM elements, with the added benefit of **lazy evaluation**.
   - [Selecting Elements](#selecting-elements)
   - [Chaining Methods](#chaining-methods)
   - [Lazy Evaluation](#lazy-evaluation)
+    - [Example of Laziness](#example-of-laziness)
+  - [Async Unwrapping with `await`](#async-unwrapping-with-await)
+    - [Example of Async Unwrapping](#example-of-async-unwrapping)
   - [Class Manipulation](#class-manipulation)
   - [Attribute Manipulation](#attribute-manipulation)
   - [Data Attributes](#data-attributes)
@@ -106,6 +109,48 @@ In the first test case, mutations are applied lazily. The classes `'foo'` and
 In the second test case, `unwrap()` forces all pending mutations to be applied
 to every selected element. This is useful when you want to ensure that all
 mutations take effect immediately.
+
+### Async Unwrapping with `await`
+
+`@ayatkevich/query` supports async unwrapping using the `await` syntax. This
+allows you to apply all pending mutations to all selected elements
+asynchronously.
+
+#### Example of Async Unwrapping
+
+```typescript
+import { describe, expect, it } from '@jest/globals';
+import { parseHTML } from 'linkedom';
+import { $ } from '@ayatkevich/query';
+
+describe('query', () => {
+  it('should allow async unwrapping with await syntax', async () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    const query = new $('div').addClass('async-test');
+
+    // At this point, mutations have not been applied due to laziness
+    const divs = Array.from(document.querySelectorAll('div'));
+    expect(divs[0].classList.contains('async-test')).toBe(false);
+    expect(divs[1].classList.contains('async-test')).toBe(false);
+
+    // Use await to unwrap the query
+    await query;
+
+    // After awaiting, mutations should be applied to all elements
+    const updatedDivs = Array.from(document.querySelectorAll('div'));
+    expect(updatedDivs[0].classList.contains('async-test')).toBe(true);
+    expect(updatedDivs[1].classList.contains('async-test')).toBe(true);
+  });
+});
+```
+
+By awaiting the query, you force all pending mutations to be applied to all
+selected elements. This can be especially useful in asynchronous contexts or
+when you want to ensure that all mutations are applied before proceeding.
 
 ### Class Manipulation
 
@@ -267,6 +312,28 @@ describe('query', () => {
     button.click();
 
     expect(clickHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('should allow async unwrapping with await syntax', async () => {
+    globalThis.document = parseHTML(/* HTML */ `
+      <div>Hello</div>
+      <div>World</div>
+    `).document;
+
+    const query = new $('div').addClass('async-test');
+
+    // At this point, mutations have not been applied due to laziness
+    const divs = Array.from(document.querySelectorAll('div'));
+    expect(divs[0].classList.contains('async-test')).toBe(false);
+    expect(divs[1].classList.contains('async-test')).toBe(false);
+
+    // Use await to unwrap the query
+    await query;
+
+    // After awaiting, mutations should be applied to all elements
+    const updatedDivs = Array.from(document.querySelectorAll('div'));
+    expect(updatedDivs[0].classList.contains('async-test')).toBe(true);
+    expect(updatedDivs[1].classList.contains('async-test')).toBe(true);
   });
 });
 ```

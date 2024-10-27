@@ -160,6 +160,10 @@ export class $ {
     return Array.from(this);
   }
 
+  then(handler: (elements: HTMLElement[]) => void) {
+    return handler(this.unwrap());
+  }
+
   *[Symbol.iterator]() {
     for (const element of document.querySelectorAll<HTMLElement>(this.query)) {
       for (const mutation of this.mutations) {
