@@ -1,7 +1,19 @@
 {
   "name": "@ayatkevich/query",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
+  "author": "Alex Yatkevich",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "compile": "tsc",
+    "test": "jest",
+    "prepublish": "npm run compile"
+  },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@swc/core": "1.7.39",
